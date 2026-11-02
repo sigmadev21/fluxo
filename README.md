@@ -1,7 +1,3 @@
 # fluxo
-<head>
-  <style></style>
-  </style>
-</head>
-<h1 class="header">A simple web app to control your spends</h1>
+<h1 align="center"><strong>A simple web app to control your spends</strong></h1>
 <img src=img/img1.png alt="Screenshot">
