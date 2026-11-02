@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fluxo</title>
+<style>
+:root{color-scheme:dark;box-sizing:border-box;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);
+--tx:light-dark(#171a2e,#eef0ff);--mu:light-dark(#5b6283,#a3a8c9);--gl:light-dark(rgba(255,255,255,.74),rgba(8,10,22,.74));--gb:light-dark(rgba(255,255,255,.75),rgba(255,255,255,.13));--sh:light-dark(0 10px 40px rgba(70,80,160,.18),0 10px 40px rgba(0,0,0,.45));--in:light-dark(rgba(255,255,255,.65),rgba(255,255,255,.07));--tr:light-dark(rgba(90,100,160,.14),rgba(255,255,255,.1));--ok:#10b981;--no:#f43f5e;--a1:#6366f1;--a2:#ec4899;--ac:linear-gradient(135deg,var(--a1),var(--a2));--bl:24px}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;min-height:100vh;font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--tx);background:light-dark(#f7f9ff,#02030a);overflow-x:hidden}
+body::before{content:"";position:fixed;inset:-20%;z-index:-1;background:radial-gradient(40% 40% at 20% 20%,#818cf8aa,transparent),radial-gradient(35% 35% at 80% 30%,#f472b6aa,transparent),radial-gradient(40% 40% at 50% 90%,#22d3eeaa,transparent);animation:fl 22s ease-in-out infinite alternate;will-change:transform}
+@keyframes fl{to{transform:translate3d(4%,3%,0) rotate(8deg) scale(1.1)}}
+@keyframes up{from{opacity:0;transform:translateY(12px)}}
+@keyframes dr{from{stroke-dasharray:0 999}}
+h1,h2,h3{margin:0 0 8px}h1{font-size:1.5rem}h3{font-size:1rem}
+.g{position:relative;background:var(--gl);-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%);border:1px solid var(--gb);border-radius:24px;box-shadow:var(--sh),inset 0 1px 0 rgba(255,255,255,.4);padding:18px;overflow:hidden;animation:up .45s both}
+.g::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.26),transparent 40%);pointer-events:none}
+.mu,small{color:var(--mu)}small{font-size:.8rem}
+.pos{color:var(--ok)}.neg{color:var(--no)}
+.shell{display:grid;grid-template-columns:230px 1fr;gap:20px;padding:20px;max-width:1240px;margin:auto;align-items:start}
+.nav{position:sticky;top:20px;display:flex;flex-direction:column;gap:6px}
+.logo{font-weight:800;font-size:1.3rem;margin-bottom:10px}.logo span{background:var(--ac);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ni{all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;padding:11px 14px;border-radius:14px;transition:.25s}
+.ni em{font-style:normal}.ni:hover{background:var(--tr)}.ni.on{background:var(--ac);color:#fff;box-shadow:0 6px 20px rgba(236,72,153,.35)}
+.ni.out{margin-top:10px;color:var(--no)}
+#main{display:grid;gap:16px;min-width:0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.st b{display:block;font-size:1.55rem;margin-top:4px}.st.big{background-image:linear-gradient(135deg,rgba(99,102,241,.25),rgba(236,72,153,.2))}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.two3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin-top:10px}
+label{display:grid;gap:4px;font-size:.82rem;color:var(--mu);margin-bottom:10px}
+input,select,textarea{font:inherit;color:var(--tx);background:var(--in);border:1px solid var(--gb);border-radius:12px;padding:10px 12px;width:100%;outline:none;transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:#818cf8;box-shadow:0 0 0 3px rgba(129,140,248,.3)}
+.fb label{margin:0}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{all:unset;cursor:pointer;font-size:.8rem;padding:6px 12px;border-radius:99px;background:var(--tr);transition:.2s}.chip:hover{background:var(--ac);color:#fff}
+.bt{all:unset;cursor:pointer;text-align:center;padding:11px 18px;border-radius:14px;background:var(--tr);transition:.2s;font-weight:600}
+.bt:hover{transform:translateY(-1px)}.bt:active{transform:scale(.97)}.pr{background:var(--ac);color:#fff;box-shadow:0 6px 18px rgba(99,102,241,.4)}.dg{background:var(--no);color:#fff}.w{display:block;width:100%}
+.fab{position:fixed;right:24px;bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:15;width:58px;height:58px;border-radius:50%;border:0;background:var(--ac);color:#fff;font-size:2rem;cursor:pointer;box-shadow:0 10px 30px rgba(236,72,153,.5);transition:.25s}.fab:hover{transform:rotate(90deg) scale(1.08)}
+.row{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--tr)}.row:last-child{border:0}
+.ic{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;font-size:1.2rem;flex:none}
+.rm{flex:1;min-width:0}.rm b,.rm small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ra button{all:unset;cursor:pointer;padding:6px;opacity:.55;transition:.2s}.ra button:hover{opacity:1;transform:scale(1.2)}
+.lh{display:flex;justify-content:space-between;align-items:center}
+.emp{text-align:center;color:var(--mu);padding:20px 0}
+.dn{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center}.donut{width:190px}.donut circle{animation:dr 1s ease-out}
+.dt{fill:var(--mu);font-size:11px}.dv{fill:var(--tx);font-size:15px;font-weight:700}
+.lg{list-style:none;margin:0;padding:0;flex:1;min-width:140px;display:grid;gap:6px;font-size:.85rem}.lg li{display:flex;align-items:center;gap:6px}.lg i{width:10px;height:10px;border-radius:50%}.lg b{margin-left:auto}
+.bars{display:flex;gap:10px;height:170px;align-items:flex-end}.bc{flex:1;text-align:center}.bp{height:140px;display:flex;gap:3px;align-items:flex-end}.bp i{flex:1;border-radius:6px 6px 2px 2px;min-height:2px;transition:height .8s cubic-bezier(.2,.8,.2,1)}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.bh{display:flex;align-items:center;gap:10px;margin-bottom:12px}.bh b{flex:1}.bh input{width:110px}
+.pb{height:10px;border-radius:9px;background:var(--tr);overflow:hidden;margin-bottom:6px}.pb i{display:block;height:100%;border-radius:9px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.seg{display:flex;gap:6px;background:var(--tr);padding:4px;border-radius:14px;margin-bottom:14px}.seg>*{flex:1;margin:0}
+.seg input{display:none}.seg span,.seg button{all:unset;cursor:pointer;display:block;text-align:center;padding:9px;border-radius:11px;color:var(--tx);transition:.25s;font-size:.9rem}
+.seg input:checked+span,.seg .on{background:var(--ac);color:#fff}
+.mo{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:rgba(10,12,30,.4);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.md{width:min(480px,100%);max-height:92dvh;overflow:auto}.acts{display:flex;gap:10px;justify-content:flex-end}
+#toasts{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:50;display:grid;gap:8px;width:min(420px,92vw)}
+.ts{padding:12px 16px;border-radius:16px;background:var(--gl);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--gb);box-shadow:var(--sh);animation:up .3s both}.ts.err{border-color:var(--no)}.ts.wr{border-color:#f59e0b}
+.aw{min-height:100vh;display:grid;place-items:center;padding:16px}.ab{width:min(400px,100%)}
+@media(max-width:820px){
+.shell{grid-template-columns:1fr;padding:14px 14px 110px}
+.nav{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));top:auto;z-index:20;flex-direction:row;justify-content:space-around;padding:6px}
+.nav .logo{display:none}.ni{flex-direction:column;gap:0;padding:8px 12px;font-size:.7rem}.ni.out{margin:0}
+.fab{bottom:calc(96px + env(safe-area-inset-bottom,0px));right:16px}
+.stats,.cols{grid-template-columns:1fr}.two3{grid-template-columns:1fr}.ra{display:flex}}
+button{font:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.bt,.chip,.ni,.seg button{box-sizing:border-box;user-select:none}
+:focus-visible{outline:2px solid var(--a1);outline-offset:2px}
+body::before{background:var(--wp,none)}html[data-wp=img] body::before{animation:none;inset:0}
+.g,.mo{-webkit-backdrop-filter:blur(var(--bl)) saturate(170%);backdrop-filter:blur(var(--bl)) saturate(170%)}
+.g{transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}
+@media(hover:hover){.g:not(.nav):not(.md):hover{transform:translateY(-3px)}}
+.logo span{background:linear-gradient(90deg,var(--a1),var(--a2),var(--a1));background-size:200%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 6s linear infinite}@keyframes sh{to{background-position:200%}}
+.ni.on,.pr{box-shadow:0 6px 20px color-mix(in srgb,var(--a1) 45%,transparent)}
+.ni span{transition:transform .3s}.ni:hover span{transform:scale(1.25) rotate(-6deg)}
+.fab{animation:pulse 2.8s infinite}@keyframes pulse{0%{box-shadow:0 10px 30px color-mix(in srgb,var(--a1) 50%,transparent),0 0 0 0 color-mix(in srgb,var(--a1) 50%,transparent)}70%,100%{box-shadow:0 10px 30px color-mix(in srgb,var(--a1) 50%,transparent),0 0 0 18px transparent}}
+input:focus,select:focus,textarea:focus{border-color:var(--a1);box-shadow:0 0 0 3px color-mix(in srgb,var(--a1) 30%,transparent)}
+.mo{animation:fd .25s}.md{animation:pop .4s cubic-bezier(.2,1.3,.3,1)}@keyframes fd{from{opacity:0}}@keyframes pop{from{opacity:0;transform:scale(.88) translateY(20px)}}
+.row{animation:sl .45s both;transition:background .2s,transform .2s}.row:hover{background:var(--tr);transform:translateX(4px)}.row .ic{transition:transform .3s}.row:hover .ic{transform:rotate(-8deg) scale(1.12)}@keyframes sl{from{opacity:0;transform:translateX(-14px)}}
+.pb i{animation:gw 1s cubic-bezier(.2,.8,.2,1)}@keyframes gw{from{width:0}}.bp i{animation:gh .9s cubic-bezier(.2,.8,.2,1) both}@keyframes gh{from{height:0}}
+.ts{animation:up .35s cubic-bezier(.2,1.2,.3,1) both}.ts.out{animation:tout .3s forwards}@keyframes tout{to{opacity:0;transform:translateY(-12px)}}#toasts{pointer-events:none}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:light-dark(rgba(255,255,255,.58),rgba(3,4,10,.72))}
+.g::before{background:linear-gradient(135deg,light-dark(rgba(255,255,255,.26),rgba(255,255,255,.06)),transparent 40%)}
+.g{box-shadow:var(--sh),inset 0 1px 0 light-dark(rgba(255,255,255,.4),rgba(255,255,255,.1))}
+:root{--bl:20px}
+.g{background:linear-gradient(135deg,rgba(255,255,255,.13),transparent 45%),var(--gl);-webkit-backdrop-filter:blur(var(--bl)) saturate(185%) brightness(1.06);backdrop-filter:blur(var(--bl)) saturate(185%) brightness(1.06);box-shadow:var(--sh),inset 0 1px 1px rgba(255,255,255,.35),inset 0 -1px 1px rgba(255,255,255,.07),inset 0 0 28px rgba(255,255,255,.035);transition:transform .45s cubic-bezier(.22,1,.36,1)}
+.g:not(.md){animation-duration:.55s;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+.g::before{content:none}
+.g::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.55),rgba(255,255,255,.04) 35%,rgba(255,255,255,.04) 65%,rgba(255,255,255,.28));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.mo{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(2,3,10,.58)}
+.ni.on,.pr{background:linear-gradient(180deg,rgba(255,255,255,.3),transparent 55%),var(--ac);box-shadow:0 6px 20px color-mix(in srgb,var(--a1) 45%,transparent),inset 0 1px 1px rgba(255,255,255,.45)}
+.bt{box-shadow:inset 0 1px 1px rgba(255,255,255,.25)}.ni:active,.chip:active,.fab:active{transform:scale(.94)}
+@keyframes up{from{opacity:0;transform:translate3d(0,16px,0) scale(.98)}}
+@keyframes pop{from{opacity:0;transform:translate3d(0,24px,0) scale(.94)}}
+.md{animation:pop .5s cubic-bezier(.22,1,.36,1)}
+@keyframes sl{from{opacity:0;transform:translate3d(-10px,0,0)}}
+.row{animation:sl .4s cubic-bezier(.22,1,.36,1) both;transition:background .2s,transform .3s cubic-bezier(.22,1,.36,1)}
+@keyframes gh{from{transform:scaleY(0)}}.bp i{transform-origin:bottom;animation:gh .8s cubic-bezier(.22,1,.36,1) both}
+@keyframes gw{from{transform:scaleX(0)}}.pb i{transform-origin:left;animation:gw 1s cubic-bezier(.22,1,.36,1) both}
+.donut circle{animation:dr .9s cubic-bezier(.22,1,.36,1) both}
+@keyframes fl{to{transform:translate3d(3%,2%,0) scale(1.06)}}body::before{animation-duration:30s}
+.logo span{animation:none}
+.fab{animation:none;box-shadow:0 10px 30px color-mix(in srgb,var(--a1) 55%,transparent),inset 0 1px 1px rgba(255,255,255,.45)}
+.fab::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--a1);pointer-events:none;animation:ring 2.8s ease-out infinite}@keyframes ring{from{transform:scale(1);opacity:.6}to{transform:scale(1.7);opacity:0}}
+html.pz *,html.pz body::before{animation-play-state:paused!important}
+@media(max-width:820px){body::before{animation:none}:root{--bl:14px}}
+select,input,textarea{color-scheme:dark}select option,select optgroup{background-color:#12142a;color:#eef0ff}select option:checked{background-color:#2b2f5c}
+.cfg{display:grid;gap:16px}.sw,.wps{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.wps{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+.sw button{all:unset;box-sizing:border-box;cursor:pointer;width:46px;height:46px;border-radius:50%;border:3px solid transparent;transition:.3s}.sw button:hover{transform:scale(1.15)}.sw button.on{border-color:var(--tx);transform:scale(1.1)}
+.wps button{all:unset;box-sizing:border-box;cursor:pointer;height:70px;border-radius:16px;border:2px solid var(--gb);display:grid;place-items:end start;padding:8px;font-size:.75rem;color:#fff;text-shadow:0 1px 4px #000a;transition:.3s}.wps button:hover{transform:scale(1.05)}.wps button.on{border-color:var(--a1);box-shadow:0 0 0 3px color-mix(in srgb,var(--a1) 40%,transparent)}
+.tg{display:flex;align-items:center;justify-content:space-between}.tg input{width:auto}input[type=range]{padding:0;accent-color:var(--a1)}input[type=color]{padding:2px;height:46px;width:60px}
+html[data-anim=off] *,html[data-anim=off] body::before{animation:none!important;transition:none!important}
+@media(prefers-reduced-motion:reduce){*,body::before{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div><div id="toasts" aria-live="polite"></div>
+<script>
+"use strict";
+/* ============ Utilitários ============ */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const brl=n=>n.toLocaleString(LOC[LANG],{style:"currency",currency:"BRL"});
+const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const fmtD=s=>s.split("-").reverse().join("/");
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36);
+const MES=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+const nxt=(s,f)=>{const d=new Date(s+"T12:00");f==="semanal"?d.setDate(d.getDate()+7):f==="mensal"?d.setMonth(d.getMonth()+1):d.setFullYear(d.getFullYear()+1);return iso(d)};
+const LS={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{toast("Não foi possível salvar os dados","err")}},del(k){try{localStorage.removeItem(k)}catch{}}};
+function toast(m,t=""){const e=document.createElement("div");e.className="ts "+t;e.textContent=m;$("#toasts").append(e);setTimeout(()=>{e.classList.add("out");setTimeout(()=>e.remove(),300)},3400)}
+const openModal=h=>{closeModal();const m=document.createElement("div");m.className="mo";m.innerHTML=`<div class="g md" role="dialog" aria-modal="true">${h}</div>`;m.addEventListener("mousedown",e=>{if(e.target===m)closeModal()});document.body.append(m);m.querySelector("input:not([type=radio]),select")?.focus()};
+const closeModal=()=>$(".mo")?.remove();
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+
+/* ============ Dados ============ */
+const DEF=[["Alimentação","🍔","d"],["Moradia","🏠","d"],["Transporte","🚗","d"],["Saúde","💊","d"],["Lazer","🎮","d"],["Educação","📚","d"],["Compras","🛍️","d"],["Contas","💡","d"],["Outros","📦","d"],["Salário","💼","r"],["Freelance","💻","r"],["Investimentos","📈","r"],["Outras receitas","💰","r"]].map(([n,e,t])=>({n,e,t}));
+const PAL=["#6366f1","#ec4899","#f59e0b","#10b981","#06b6d4","#8b5cf6","#f43f5e","#84cc16","#64748b","#14b8a6","#f97316","#3b82f6","#a855f7"];
+const PAY=["Pix","Cartão de crédito","Cartão de débito","Dinheiro","Boleto","Transferência"];
+const REC={"":"Não repete",semanal:"Semanalmente",mensal:"Mensalmente",anual:"Anualmente"};
+const S={user:null,data:null,wp:"",view:"painel",f:{from:"",to:"",q:"",cat:"",type:""}};
+const CFG={accent:"indigo",custom:"#6366f1",wall:"aurora",anim:true};
+const ACC={indigo:["#6366f1","#ec4899","Índigo"],oceano:["#0ea5e9","#6366f1","Oceano"],sol:["#f97316","#ec4899","Pôr do sol"],menta:["#10b981","#06b6d4","Menta"],violeta:["#8b5cf6","#d946ef","Violeta"],rubi:["#ef4444","#f59e0b","Rubi"]};
+const WP={aurora:"radial-gradient(40% 40% at 20% 20%,color-mix(in srgb,var(--a1) 66%,transparent),transparent),radial-gradient(35% 35% at 80% 30%,color-mix(in srgb,var(--a2) 66%,transparent),transparent),radial-gradient(40% 40% at 50% 90%,#22d3eeaa,transparent)",oceano:"radial-gradient(50% 50% at 20% 20%,#38bdf8bb,transparent),radial-gradient(45% 45% at 80% 70%,#6366f1aa,transparent),radial-gradient(40% 40% at 50% 100%,#22d3eeaa,transparent)",sol:"radial-gradient(50% 50% at 80% 15%,#fb923ccc,transparent),radial-gradient(45% 45% at 15% 40%,#f472b6aa,transparent),radial-gradient(50% 50% at 60% 100%,#a78bfaaa,transparent)",floresta:"radial-gradient(50% 50% at 25% 20%,#34d399aa,transparent),radial-gradient(45% 45% at 80% 60%,#84cc16aa,transparent),radial-gradient(40% 40% at 40% 100%,#0d9488aa,transparent)",grafite:"radial-gradient(50% 50% at 30% 20%,#94a3b866,transparent),radial-gradient(50% 50% at 80% 80%,#64748b66,transparent)"};
+const WPN={aurora:"Aurora",oceano:"Oceano",sol:"Pôr do sol",floresta:"Floresta",grafite:"Grafite"};
+function applyCfg(){const c=S.data?.cfg||CFG,r=document.documentElement,cu=/^#[0-9a-f]{6}$/i.test(c.custom)?c.custom:"#6366f1",a=c.accent==="custom"?[cu,`color-mix(in srgb,${cu} 55%,#ec4899)`]:ACC[c.accent]||ACC.indigo,img=c.wall==="img"&&S.wp;
+  r.dataset.anim=c.anim?"on":"off";r.dataset.wp=img?"img":"";
+  r.style.setProperty("--a1",a[0]);r.style.setProperty("--a2",a[1]);
+  r.style.setProperty("--wp",img?`url("${S.wp}") center/cover`:WP[c.wall]||WP.aurora)}
+const ALL=()=>DEF.concat(S.data.cats);
+const catOf=n=>ALL().find(c=>c.n===n)||{n,e:"🏷️"};
+const col=n=>PAL[Math.max(0,ALL().findIndex(c=>c.n===n))%PAL.length];
+const save=()=>LS.set("fx_data_"+S.user.id,S.data);
+
+function runRec(){let n=0;const hoje=iso(new Date());
+  S.data.tx.slice().forEach(t=>{if(!t.rec)return;let g=0;
+    while(t.next&&t.next<=hoje&&g++<400){S.data.tx.push({...t,id:uid(),date:t.next,rec:"",next:"",auto:1});t.next=nxt(t.next,t.rec);n++}});
+  if(n){save();toast(n+" transação(ões) recorrente(s) lançada(s)")}}
+
+function filt(dash){const{from,to,q,cat,type}=S.f,k=q.trim().toLowerCase();
+  return S.data.tx.filter(t=>(!from||t.date>=from)&&(!to||t.date<=to)&&(dash||((!cat||t.cat===cat)&&(!type||t.type===type)&&(!k||(t.desc+" "+t.cat+" "+t.pay+" "+(t.note||"")).toLowerCase().includes(k)))))
+   .sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id))}
+
+/* ============ Idiomas (padrão: inglês; textos-fonte em português) ============ */
+const LANGS=["pt","en","es","fr"],LOC={pt:"pt-BR",en:"en-US",es:"es-ES",fr:"fr-FR"},LN={pt:"Português",en:"English",es:"Español",fr:"Français"};
+let LANG=LS.get("fx_lang","en");if(!LANGS.includes(LANG))LANG="en";
+const DX={},DP=[];
+`Seu controle de gastos pessoal|Your personal expense tracker|Tu control de gastos personal|Votre suivi de dépenses personnel
+Entrar|Sign in|Entrar|Se connecter
+Criar conta|Create account|Crear cuenta|Créer un compte
+Usuário|Username|Usuario|Nom d’utilisateur
+seu_usuario|your_username|tu_usuario|votre_nom
+Senha|Password|Contraseña|Mot de passe
+Confirmar senha|Confirm password|Confirmar contraseña|Confirmer le mot de passe
+Criar minha conta|Create my account|Crear mi cuenta|Créer mon compte
+Idioma|Language|Idioma|Langue
+Idioma 🌐|Language 🌐|Idioma 🌐|Langue 🌐
+🔒 Dados salvos apenas neste navegador, vinculados à sua conta. Senha protegida com hash PBKDF2.|🔒 Data is stored only in this browser, tied to your account. Password protected with a PBKDF2 hash.|🔒 Los datos se guardan solo en este navegador, vinculados a tu cuenta. Contraseña protegida con hash PBKDF2.|🔒 Données enregistrées uniquement dans ce navigateur, liées à votre compte. Mot de passe protégé par hash PBKDF2.
+A senha precisa ter pelo menos 6 caracteres|Password must be at least 6 characters|La contraseña debe tener al menos 6 caracteres|Le mot de passe doit contenir au moins 6 caractères
+As senhas não conferem|Passwords don’t match|Las contraseñas no coinciden|Les mots de passe ne correspondent pas
+Esse nome de usuário já existe|That username already exists|Ese nombre de usuario ya existe|Ce nom d’utilisateur existe déjà
+Usuário: 3 a 24 caracteres (letras, números, _ . -)|Username: 3–24 characters (letters, numbers, _ . -)|Usuario: 3 a 24 caracteres (letras, números, _ . -)|Nom : 3 à 24 caractères (lettres, chiffres, _ . -)
+Usuário ou senha incorretos|Incorrect username or password|Usuario o contraseña incorrectos|Nom d’utilisateur ou mot de passe incorrect
+Erro de autenticação. Tente novamente.|Authentication error. Please try again.|Error de autenticación. Inténtalo de nuevo.|Erreur d’authentification. Réessayez.
+Conta criada! Bem-vindo(a) 🎉|Account created! Welcome 🎉|¡Cuenta creada! Te damos la bienvenida 🎉|Compte créé ! Bienvenue 🎉
+Login realizado com sucesso|Signed in successfully|Sesión iniciada correctamente|Connexion réussie
+Você saiu da conta. Até logo!|You’re signed out. See you soon!|Has cerrado sesión. ¡Hasta pronto!|Vous êtes déconnecté. À bientôt !
+Não foi possível salvar os dados|Couldn’t save your data|No se pudieron guardar los datos|Impossible d’enregistrer les données
+Painel|Dashboard|Panel|Accueil
+Transações|Transactions|Transacciones|Transactions
+Orçamentos|Budgets|Presupuestos|Budgets
+Ajustes|Settings|Ajustes|Réglages
+Sair|Log out|Salir|Déconnexion
+Olá, {} 👋|Hi, {} 👋|Hola, {} 👋|Salut, {} 👋
+Resumo das suas finanças no período selecionado|Your finances summary for the selected period|Resumen de tus finanzas en el período seleccionado|Résumé de vos finances sur la période choisie
+De|From|Desde|Du
+Até|To|Hasta|Au
+Este mês|This month|Este mes|Ce mois-ci
+Mês passado|Last month|Mes pasado|Mois dernier
+30 dias|30 days|30 días|30 jours
+Este ano|This year|Este año|Cette année
+Tudo|All time|Todo|Tout
+🔎 Busca rápida...|🔎 Quick search...|🔎 Búsqueda rápida...|🔎 Recherche rapide...
+Buscar|Search|Buscar|Rechercher
+Categoria|Category|Categoría|Catégorie
+Tipo|Type|Tipo|Type
+Todas as categorias|All categories|Todas las categorías|Toutes les catégories
+Receitas e despesas|Income and expenses|Ingresos y gastos|Revenus et dépenses
+Só receitas|Income only|Solo ingresos|Revenus seulement
+Só despesas|Expenses only|Solo gastos|Dépenses seulement
+Saldo total|Total balance|Saldo total|Solde total
+Receitas do período|Income this period|Ingresos del período|Revenus de la période
+Despesas do período|Expenses this period|Gastos del período|Dépenses de la période
+Gastos por categoria|Spending by category|Gastos por categoría|Dépenses par catégorie
+Sem despesas neste período|No expenses in this period|Sin gastos en este período|Aucune dépense sur cette période
+Últimos 6 meses|Last 6 months|Últimos 6 meses|6 derniers mois
+Transações recentes|Recent transactions|Transacciones recientes|Transactions récentes
+Ver todas|See all|Ver todas|Tout voir
+Nada por aqui ainda. Toque no + para lançar sua primeira transação!|Nothing here yet. Tap + to add your first transaction!|Aún no hay nada. ¡Toca + para añadir tu primera transacción!|Rien ici pour l’instant. Touchez + pour ajouter votre première transaction !
+Receitas|Income|Ingresos|Revenus
+Despesas|Expenses|Gastos|Dépenses
+Receita|Income|Ingreso|Revenu
+Despesa|Expense|Gasto|Dépense
+Receitas {}|Income {}|Ingresos {}|Revenus {}
+Despesas {}|Expenses {}|Gastos {}|Dépenses {}
+Lançamentos|Entries|Registros|Écritures
+{} resultado(s)|{} result(s)|{} resultado(s)|{} résultat(s)
+Nenhuma transação encontrada 🫧|No transactions found 🫧|No se encontraron transacciones 🫧|Aucune transaction trouvée 🫧
+Editar|Edit|Editar|Modifier
+Excluir|Delete|Eliminar|Supprimer
+automática|automatic|automática|automatique
+🔁 Semanalmente|🔁 Weekly|🔁 Semanalmente|🔁 Chaque semaine
+🔁 Mensalmente|🔁 Monthly|🔁 Mensualmente|🔁 Chaque mois
+🔁 Anualmente|🔁 Yearly|🔁 Anualmente|🔁 Chaque année
+Cartão de crédito|Credit card|Tarjeta de crédito|Carte de crédit
+Cartão de débito|Debit card|Tarjeta de débito|Carte de débit
+Dinheiro|Cash|Efectivo|Espèces
+Boleto|Bank slip (boleto)|Boleto bancario|Boleto bancaire
+Transferência|Bank transfer|Transferencia|Virement
+Alimentação|Food|Alimentación|Alimentation
+Moradia|Housing|Vivienda|Logement
+Transporte|Transport|Transporte|Transport
+Saúde|Health|Salud|Santé
+Lazer|Leisure|Ocio|Loisirs
+Educação|Education|Educación|Éducation
+Compras|Shopping|Compras|Achats
+Contas|Bills|Facturas|Factures
+Outros|Other|Otros|Autres
+Salário|Salary|Salario|Salaire
+Investimentos|Investments|Inversiones|Investissements
+Outras receitas|Other income|Otros ingresos|Autres revenus
+Editar transação|Edit transaction|Editar transacción|Modifier la transaction
+Nova transação|New transaction|Nueva transacción|Nouvelle transaction
+Descrição|Description|Descripción|Description
+Valor (R$)|Amount (R$)|Importe (R$)|Montant (R$)
+Data|Date|Fecha|Date
+Pagamento|Payment|Pago|Paiement
+Recorrência|Repeat|Repetición|Récurrence
+Não repete|Doesn’t repeat|No se repite|Ne se répète pas
+Semanalmente|Weekly|Semanalmente|Chaque semaine
+Mensalmente|Monthly|Mensualmente|Chaque mois
+Anualmente|Yearly|Anualmente|Chaque année
+Observações|Notes|Notas|Remarques
+Cancelar|Cancel|Cancelar|Annuler
+Salvar|Save|Guardar|Enregistrer
+Informe uma descrição e um valor válidos|Enter a description and a valid amount|Indica una descripción y un importe válidos|Saisissez une description et un montant valides
+Transação atualizada ✏️|Transaction updated ✏️|Transacción actualizada ✏️|Transaction mise à jour ✏️
+Transação adicionada ✅|Transaction added ✅|Transacción añadida ✅|Transaction ajoutée ✅
+⚠️ Orçamento de {} estourado ({} de {})|⚠️ {} budget exceeded ({} of {})|⚠️ Presupuesto de {} superado ({} de {})|⚠️ Budget {} dépassé ({} sur {})
+Atenção: {}% do orçamento de {}|Heads up: {}% of the {} budget|Atención: {}% del presupuesto de {}|Attention : {}% du budget {}
+{} transação(ões) recorrente(s) lançada(s)|{} recurring transaction(s) posted|{} transacción(es) recurrente(s) registrada(s)|{} transaction(s) récurrente(s) enregistrée(s)
+Excluir transação?|Delete transaction?|¿Eliminar transacción?|Supprimer la transaction ?
+Os próximos lançamentos recorrentes também serão cancelados.|Future recurring entries will be cancelled too.|Los próximos registros recurrentes también se cancelarán.|Les prochaines occurrences récurrentes seront aussi annulées.
+Transação excluída 🗑️|Transaction deleted 🗑️|Transacción eliminada 🗑️|Transaction supprimée 🗑️
+Defina limites mensais por categoria (mês atual)|Set monthly limits per category (current month)|Define límites mensuales por categoría (mes actual)|Définissez des plafonds mensuels par catégorie (mois en cours)
+↺ Restaurar ocultos ({})|↺ Restore hidden ({})|↺ Restaurar ocultos ({})|↺ Restaurer les masqués ({})
+Nova categoria personalizada|New custom category|Nueva categoría personalizada|Nouvelle catégorie personnalisée
+Nome|Name|Nombre|Nom
+Adicionar|Add|Añadir|Ajouter
+Limite R$|Limit R$|Límite R$|Plafond R$
+Limite de {}|{} limit|Límite de {}|Plafond {}
+Remover da tela|Remove from screen|Quitar de la pantalla|Retirer de l’écran
+Remover {} da tela|Remove {} from screen|Quitar {} de la pantalla|Retirer {} de l’écran
+Gasto no mês: {}|Spent this month: {}|Gasto del mes: {}|Dépensé ce mois : {}
+sem limite|no limit|sin límite|sans plafond
+{}% ⚠️ estourado|{}% ⚠️ over budget|{}% ⚠️ superado|{}% ⚠️ dépassé
+atencao|care|care|care
+atenção|careful|atención|attention
+R$\{} de R$\{}|R$\{} of R$\{}|R$\{} de R$\{}|R$\{} sur R$\{}
+Orçamento removido da tela 🗑️|Budget removed from screen 🗑️|Presupuesto quitado de la pantalla 🗑️|Budget retiré de l’écran 🗑️
+Orçamentos restaurados ↺|Budgets restored ↺|Presupuestos restaurados ↺|Budgets restaurés ↺
+Orçamento atualizado 🎯|Budget updated 🎯|Presupuesto actualizado 🎯|Budget mis à jour 🎯
+Essa categoria já existe|That category already exists|Esa categoría ya existe|Cette catégorie existe déjà
+Categoria criada ✨|Category created ✨|Categoría creada ✨|Catégorie créée ✨
+Ajustes ⚙️|Settings ⚙️|Ajustes ⚙️|Réglages ⚙️
+Deixe o app com a sua cara|Make the app yours|Personaliza la app a tu gusto|Personnalisez l’appli à votre goût
+Cor-tema|Accent color|Color de acento|Couleur d’accent
+Cor personalizada|Custom color|Color personalizado|Couleur personnalisée
+Índigo|Indigo|Índigo|Indigo
+Oceano|Ocean|Océano|Océan
+Pôr do sol|Sunset|Atardecer|Coucher de soleil
+Menta|Mint|Menta|Menthe
+Violeta|Violet|Violeta|Violet
+Rubi|Ruby|Rubí|Rubis
+Aurora|Aurora|Aurora|Aurore
+Floresta|Forest|Bosque|Forêt
+Grafite|Graphite|Grafito|Graphite
+Papel de parede|Wallpaper|Fondo de pantalla|Fond d’écran
+Minha imagem|My image|Mi imagen|Mon image
+📷 Enviar imagem|📷 Upload image|📷 Subir imagen|📷 Importer une image
+Remover imagem|Remove image|Quitar imagen|Retirer l’image
+Efeitos|Effects|Efectos|Effets
+Animações|Animations|Animaciones|Animations
+↺ Restaurar padrão|↺ Reset to default|↺ Restaurar valores|↺ Réinitialiser
+🗑️ Excluir minha conta|🗑️ Delete my account|🗑️ Eliminar mi cuenta|🗑️ Supprimer mon compte
+Ajustes restaurados ↺|Settings reset ↺|Ajustes restaurados ↺|Réglages réinitialisés ↺
+Papel de parede atualizado 🖼️|Wallpaper updated 🖼️|Fondo actualizado 🖼️|Fond d’écran mis à jour 🖼️
+Não foi possível ler a imagem|Couldn’t read the image|No se pudo leer la imagen|Impossible de lire l’image
+Excluir conta?|Delete account?|¿Eliminar cuenta?|Supprimer le compte ?
+Isso apaga o usuário|This deletes user|Esto elimina al usuario|Cela supprime l’utilisateur
+e todas as transações, orçamentos e ajustes. Não dá pra desfazer.|and all transactions, budgets and settings. This can’t be undone.|y todas las transacciones, presupuestos y ajustes. No se puede deshacer.|ainsi que toutes les transactions, budgets et réglages. Action irréversible.
+Confirme sua senha|Confirm your password|Confirma tu contraseña|Confirmez votre mot de passe
+Excluir de vez|Delete for good|Eliminar definitivamente|Supprimer définitivement
+Senha incorreta|Incorrect password|Contraseña incorrecta|Mot de passe incorrect
+Erro ao excluir a conta|Couldn’t delete the account|Error al eliminar la cuenta|Erreur lors de la suppression
+Conta excluída com sucesso 🗑️|Account deleted 🗑️|Cuenta eliminada 🗑️|Compte supprimé 🗑️
+Controle de gastos|Expense tracker|Control de gastos|Suivi de dépenses
+Jan|Jan|Ene|Janv.
+Fev|Feb|Feb|Févr.
+Mar|Mar|Mar|Mars
+Abr|Apr|Abr|Avr.
+Mai|May|May|Mai
+Jun|Jun|Jun|Juin
+Jul|Jul|Jul|Juil.
+Ago|Aug|Ago|Août
+Set|Sep|Sep|Sept.
+Out|Oct|Oct|Oct.
+Dez|Dec|Dic|Déc.
+{}: {}|{}: {}|{}: {}|{} : {}`.split("\n").forEach(l=>{const a=l.split("|");if(a.length<4)return;
+  if(a[0].includes("{}"))DP.push([new RegExp("^"+a[0].replace(/[.*+?^$()[\]\\]/g,"\\$&").replace(/\{\}/g,"(.+?)")+"$"),a]);else DX[a[0]]=a});
+DP.sort((x,y)=>y[1][0].length-x[1][0].length);
+function tr(s){if(LANG==="pt")return s;const i=LANGS.indexOf(LANG),m=s.match(/^(\s*)([\s\S]*?)(\s*)$/);if(!m[2])return s;
+  const f=x=>{if(DX[x])return DX[x][i];for(const[r,a]of DP){const k=x.match(r);if(k){let n=0;return a[i].replace(/\{\}/g,()=>f(k[++n]))}}
+    return x.includes(" · ")?x.split(" · ").map(f).join(" · "):x};
+  return m[1]+f(m[2])+m[3]}
+function tl(root){if(LANG==="pt"||!root)return;const skip="[translate=no],[data-n],textarea,script,style";
+  if(root.nodeType===3){if(!root.parentElement?.closest(skip))root.nodeValue=tr(root.nodeValue);return}
+  if(root.nodeType!==1)return;const w=document.createTreeWalker(root,5);let e=root;
+  do{if(e.nodeType===3){if(!e.parentElement?.closest(skip))e.nodeValue=tr(e.nodeValue)}
+    else{for(const a of["placeholder","title","aria-label"]){const v=e.getAttribute(a);if(v)e.setAttribute(a,tr(v))}
+      if(e.tagName==="OPTION"&&!e.hasAttribute("value"))e.setAttribute("value",e.textContent)}}while(e=w.nextNode())}
+const langSel=()=>`<select data-lang aria-label="Idioma">${LANGS.map(l=>`<option value="${l}" ${l===LANG?"selected":""}>${LN[l]}</option>`).join("")}</select>`;
+function setLang(l){LANG=l;LS.set("fx_lang",l);document.documentElement.lang=l;document.title="Fluxo — "+tr("Controle de gastos");closeModal();S.user?render():authView($("#af")?.dataset.m)}
+
+/* ============ Autenticação ============ */
+async function hash(pw,salt){const k=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveBits"]);
+  const b=await crypto.subtle.deriveBits({name:"PBKDF2",salt:Uint8Array.from(atob(salt),c=>c.charCodeAt(0)),iterations:150000,hash:"SHA-256"},k,256);
+  return btoa(String.fromCharCode(...new Uint8Array(b)))}
+async function auth(mode,f){const v=Object.fromEntries(new FormData(f)),id=v.user.trim().toLowerCase(),U=LS.get("fx_users",{});
+  try{
+    if(mode==="reg"){
+      if(!/^[a-z0-9_.-]{3,24}$/.test(id))return toast("Usuário: 3 a 24 caracteres (letras, números, _ . -)","err");
+      if(v.pw.length<6)return toast("A senha precisa ter pelo menos 6 caracteres","err");
+      if(v.pw!==v.pw2)return toast("As senhas não conferem","err");
+      if(U[id])return toast("Esse nome de usuário já existe","err");
+      const salt=btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16))));
+      U[id]={name:id,salt,hash:await hash(v.pw,salt)};LS.set("fx_users",U);
+    }else{const u=U[id];if(!u||u.hash!==await hash(v.pw,u.salt))return toast("Usuário ou senha incorretos","err")}
+    LS.set("fx_session",{id,exp:Date.now()+7*864e5});boot();toast(mode==="reg"?"Conta criada! Bem-vindo(a) 🎉":"Login realizado com sucesso")
+  }catch{toast("Erro de autenticação. Tente novamente.","err")}}
+function logout(){LS.del("fx_session");closeModal();authView();toast("Você saiu da conta. Até logo!")}
+function authView(m="login"){S.user=S.data=null;applyCfg();const r=m==="reg";
+  $("#app").innerHTML=`<div class="aw"><div class="g ab"><div class="logo">💧 <span>Fluxo</span></div><p class="mu">Seu controle de gastos pessoal</p>
+  <div class="seg"><button type="button" class="${r?"":"on"}" data-act="am" data-m="login">Entrar</button><button type="button" class="${r?"on":""}" data-act="am" data-m="reg">Criar conta</button></div>
+  <form id="af" data-m="${m}">
+  <label>Usuário<input name="user" required minlength="3" maxlength="24" autocapitalize="none" autocomplete="username" spellcheck="false" placeholder="seu_usuario"></label>
+  <label>Senha<input name="pw" type="password" required minlength="6" autocomplete="${r?"new-password":"current-password"}"></label>
+  ${r?'<label>Confirmar senha<input name="pw2" type="password" required minlength="6" autocomplete="new-password"></label>':""}
+  <button class="bt pr w">${r?"Criar minha conta":"Entrar"}</button></form>
+  <label style="margin-top:14px">Idioma 🌐${langSel()}</label><p><small>🔒 Dados salvos apenas neste navegador, vinculados à sua conta. Senha protegida com hash PBKDF2.</small></p></div></div>`}
+function boot(){const s=LS.get("fx_session"),sid=s&&(s.id||s.email),u=s&&s.exp>Date.now()&&LS.get("fx_users",{})[sid];
+  if(!u){LS.del("fx_session");return authView()}
+  LS.set("fx_session",{id:sid,exp:Date.now()+7*864e5});
+  S.user={id:sid,name:u.name};S.data={tx:[],budgets:{},cats:[],...LS.get("fx_data_"+sid,{})};S.data.cfg={...CFG,...S.data.cfg};S.wp=LS.get("fx_wp_"+sid,"");applyCfg();
+  const n=new Date();S.f={from:iso(new Date(n.getFullYear(),n.getMonth(),1)),to:iso(new Date(n.getFullYear(),n.getMonth()+1,0)),q:"",cat:"",type:""};
+  S.view="painel";$("#app").innerHTML="";runRec();render()}
+
+/* ============ Componentes ============ */
+const row=t=>{const c=catOf(t.cat),r=t.type==="r";
+  return `<div class="row"><span class="ic" style="background:${col(t.cat)}28">${c.e}</span><div class="rm"><b translate="no">${esc(t.desc)}</b><small>${esc(t.cat)} · ${esc(t.pay)} · ${fmtD(t.date)}${t.rec?" · 🔁 "+REC[t.rec]:""}${t.auto?" · automática":""}</small>${t.note?`<small translate="no">📝 ${esc(t.note)}</small>`:""}</div><b class="${r?"pos":"neg"}">${r?"+":"−"}${brl(t.amount)}</b><span class="ra"><button data-act="edit" data-id="${t.id}" aria-label="Editar">✏️</button><button data-act="del" data-id="${t.id}" aria-label="Excluir">🗑️</button></span></div>`};
+function donut(it,tot){const R=70,C=2*Math.PI*R;let off=0;
+  return `<svg viewBox="0 0 200 200" class="donut" role="img" aria-label="Gastos por categoria"><circle cx="100" cy="100" r="${R}" fill="none" stroke="var(--tr)" stroke-width="26"/>`+
+  it.map(([n,v])=>{const l=v/tot*C,s=`<circle cx="100" cy="100" r="${R}" fill="none" stroke="${col(n)}" stroke-width="26" stroke-dasharray="${Math.max(l-2,.5)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 100 100)"><title>${esc(n)}: ${brl(v)}</title></circle>`;off+=l;return s}).join("")+
+  `<text x="100" y="96" text-anchor="middle" class="dt">Despesas</text><text x="100" y="117" text-anchor="middle" class="dv">${brl(tot)}</text></svg>`}
+function bars(){const d=new Date(),ks=[];for(let i=5;i>=0;i--)ks.push(iso(new Date(d.getFullYear(),d.getMonth()-i,1)).slice(0,7));
+  const ag=ks.map(k=>{let r=0,e=0;S.data.tx.forEach(t=>{if(t.date.slice(0,7)===k)t.type==="r"?r+=t.amount:e+=t.amount});return[k,r,e]});
+  const mx=Math.max(1,...ag.flatMap(a=>[a[1],a[2]]));
+  return `<div class="bars">`+ag.map(([k,r,e])=>`<div class="bc"><div class="bp"><i style="height:${r/mx*100}%;background:var(--ok)" title="Receitas ${brl(r)}"></i><i style="height:${e/mx*100}%;background:var(--no)" title="Despesas ${brl(e)}"></i></div><small>${MES[+k.slice(5)-1]}</small></div>`).join("")+`</div><small><span class="pos">■</span> Receitas &nbsp;<span class="neg">■</span> Despesas</small>`}
+const bar=full=>`<div class="g fb"><div class="two"><label>De<input type="date" data-f="from" value="${S.f.from}"></label><label>Até<input type="date" data-f="to" value="${S.f.to}"></label></div>
+  <div class="chips">${[["mes","Este mês"],["ant","Mês passado"],["30","30 dias"],["ano","Este ano"],["tudo","Tudo"]].map(([p,l])=>`<button class="chip" data-act="preset" data-p="${p}">${l}</button>`).join("")}</div>
+  ${full?`<div class="two3"><input type="search" data-f="q" placeholder="🔎 Busca rápida..." value="${esc(S.f.q)}" aria-label="Buscar">
+  <select data-f="cat" aria-label="Categoria"><option value="">Todas as categorias</option>${ALL().map(c=>`<option ${S.f.cat===c.n?"selected":""}>${esc(c.n)}</option>`).join("")}</select>
+  <select data-f="type" aria-label="Tipo"><option value="">Receitas e despesas</option><option value="r" ${S.f.type==="r"?"selected":""}>Só receitas</option><option value="d" ${S.f.type==="d"?"selected":""}>Só despesas</option></select></div>`:""}</div>`;
+const list=()=>{const a=filt();return a.length?a.map(row).join(""):`<p class="emp">Nenhuma transação encontrada 🫧</p>`};
+
+/* ============ Views ============ */
+const V={
+painel(){const a=filt(1);let r=0,e=0;const by={};
+  a.forEach(t=>{if(t.type==="r")r+=t.amount;else{e+=t.amount;by[t.cat]=(by[t.cat]||0)+t.amount}});
+  const tot=S.data.tx.reduce((s,t)=>s+(t.type==="r"?t.amount:-t.amount),0),it=Object.entries(by).sort((x,y)=>y[1]-x[1]);
+  return `<div><h1>Olá, ${esc(S.user.name)} 👋</h1><p class="mu">Resumo das suas finanças no período selecionado</p></div>${bar()}
+  <div class="stats"><div class="g st big"><small>Saldo total</small><b class="${tot<0?"neg":""}" data-n="${tot}">${brl(tot)}</b></div><div class="g st"><small>Receitas do período</small><b class="pos" data-n="${r}">${brl(r)}</b></div><div class="g st"><small>Despesas do período</small><b class="neg" data-n="${e}">${brl(e)}</b></div></div>
+  <div class="cols"><div class="g"><h3>Gastos por categoria</h3>${it.length?`<div class="dn">${donut(it,e)}<ul class="lg">${it.slice(0,7).map(([n,v])=>`<li><i style="background:${col(n)}"></i>${catOf(n).e} ${esc(n)}<b>${Math.round(v/e*100)}%</b></li>`).join("")}</ul></div>`:'<p class="emp">Sem despesas neste período</p>'}</div>
+  <div class="g"><h3>Últimos 6 meses</h3>${bars()}</div></div>
+  <div class="g"><div class="lh"><h3>Transações recentes</h3><button class="chip" data-act="nav" data-v="trans">Ver todas</button></div>${a.slice(0,5).map(row).join("")||'<p class="emp">Nada por aqui ainda. Toque no + para lançar sua primeira transação!</p>'}</div>`},
+trans(){return `<h1>Transações</h1>${bar(1)}<div class="g"><div class="lh"><h3>Lançamentos</h3><small id="sum">${filt().length} resultado(s)</small></div><div id="lst">${list()}</div></div>`},
+orc(){const m=iso(new Date()).slice(0,7),sp={};
+  S.data.tx.forEach(t=>{if(t.type==="d"&&t.date.slice(0,7)===m)sp[t.cat]=(sp[t.cat]||0)+t.amount});
+  return `<div><h1>Orçamentos</h1><p class="mu">Defina limites mensais por categoria (mês atual)</p>${(S.data.hid||[]).length?`<button class="chip" data-act="rshow" style="margin-top:8px">↺ Restaurar ocultos (${S.data.hid.length})</button>`:""}</div>
+  <div class="g"><h3>Nova categoria personalizada</h3><form id="cf" class="two3" style="grid-template-columns:2fr 1fr 1fr auto"><input name="n" required maxlength="24" placeholder="Nome"><input name="e" maxlength="2" placeholder="Emoji 😀"><select name="t"><option value="d">Despesa</option><option value="r">Receita</option></select><button class="bt pr">Adicionar</button></form></div>
+  <div class="bgrid">${ALL().filter(c=>c.t==="d"&&!(S.data.hid||[]).includes(c.n)).map(c=>{const l=S.data.budgets[c.n]||0,s=sp[c.n]||0,p=l?s/l*100:0;
+   return `<div class="g"><div class="bh"><span class="ic" style="background:${col(c.n)}28">${c.e}</span><b>${esc(c.n)}</b><input type="number" min="0" step="10" placeholder="Limite R$" value="${l||""}" data-bud="${esc(c.n)}" aria-label="Limite de ${esc(c.n)}"><button class="chip" data-act="rmbud" data-c="${esc(c.n)}" title="Remover da tela" aria-label="Remover ${esc(c.n)} da tela">🗑️</button></div>
+   ${l?`<div class="pb"><i style="width:${Math.min(p,100)}%;background:${p>=100?"var(--no)":p>=80?"#f59e0b":"var(--ok)"}"></i></div><small>${brl(s)} de ${brl(l)} · ${Math.round(p)}%${p>=100?" ⚠️ estourado":p>=80?" · atenção":""}</small>`:`<small>Gasto no mês: ${brl(s)} · sem limite</small>`}</div>`}).join("")}</div>`}};
+V.cfg=()=>{const c=S.data.cfg,on=v=>v?"on":"";
+  return `<div><h1>Ajustes ⚙️</h1><p class="mu">Deixe o app com a sua cara</p></div><div class="cfg">
+  
+  <div class="g"><h3>Idioma 🌐</h3>${langSel()}</div>
+  <div class="g"><h3>Cor-tema</h3><div class="sw">${Object.entries(ACC).map(([k,a])=>`<button class="${on(c.accent===k)}" title="${a[2]}" aria-label="${a[2]}" style="background:linear-gradient(135deg,${a[0]},${a[1]})" data-act="cfg" data-k="accent" data-v="${k}"></button>`).join("")}<input type="color" data-cfg="custom" value="${c.custom}" title="Cor personalizada" aria-label="Cor personalizada"></div></div>
+  <div class="g"><h3>Papel de parede</h3><div class="wps">${Object.keys(WP).map(k=>`<button class="${on(c.wall===k)}" style="background:${WP[k]},light-dark(#e9edff,#0b0d1f)" data-act="cfg" data-k="wall" data-v="${k}">${WPN[k]}</button>`).join("")}${S.wp?`<button class="${on(c.wall==="img")}" style="background:url('${S.wp}') center/cover" data-act="cfg" data-k="wall" data-v="img">Minha imagem</button>`:""}</div>
+  <div class="chips"><label class="chip" style="cursor:pointer">📷 Enviar imagem<input type="file" accept="image/*" data-wpfile hidden></label>${S.wp?'<button class="chip" data-act="wpdel">Remover imagem</button>':""}</div></div>
+  <div class="g"><h3>Efeitos</h3><label class="tg">Animações<input type="checkbox" data-cfg="anim" ${c.anim?"checked":""}></label></div>
+  <button class="bt" data-act="cfgreset">↺ Restaurar padrão</button><button class="bt dg" data-act="delacc">🗑️ Excluir minha conta</button></div>`};
+function setCfg(k,v){S.data.cfg[k]=v;save();applyCfg();render()}
+function loadWp(file){if(!file)return;const rd=new FileReader(),im=new Image();
+  rd.onload=()=>{im.src=rd.result};rd.onerror=im.onerror=()=>toast("Não foi possível ler a imagem","err");
+  im.onload=()=>{const k=Math.min(1,1600/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=im.width*k;cv.height=im.height*k;cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);
+    S.wp=cv.toDataURL("image/jpeg",.8);LS.set("fx_wp_"+S.user.id,S.wp);S.data.cfg.wall="img";save();applyCfg();render();toast("Papel de parede atualizado 🖼️")};
+  rd.readAsDataURL(file)}
+function stag(){document.querySelectorAll(".row").forEach((r,i)=>r.style.animationDelay=Math.min(i,12)*25+"ms")}
+function post(){[...$("#main").children].forEach((c,i)=>c.style.animationDelay=i*50+"ms");stag();
+  if(S.data.cfg.anim)document.querySelectorAll("[data-n]").forEach(el=>{const n=+el.dataset.n,t0=performance.now();(function f(t){const p=Math.min((t-t0)/650,1);el.textContent=brl(n*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(t0)})}
+async function delAccount(f){const U=LS.get("fx_users",{}),id=S.user.id,u=U[id];
+  try{if(!u||u.hash!==await hash(new FormData(f).get("pw"),u.salt))return toast("Senha incorreta","err");
+    delete U[id];LS.set("fx_users",U);LS.del("fx_data_"+id);LS.del("fx_wp_"+id);LS.del("fx_session");closeModal();authView();toast("Conta excluída com sucesso 🗑️")}
+  catch{toast("Erro ao excluir a conta","err")}}
+function render(){if(!S.user)return;
+  if(!$("#main"))$("#app").innerHTML=`<div class="shell"><nav class="g nav"><div class="logo">💧 <span>Fluxo</span></div>${[["painel","📊","Painel"],["trans","💸","Transações"],["orc","🎯","Orçamentos"],["cfg","⚙️","Ajustes"]].map(([v,i,l])=>`<button class="ni" data-act="nav" data-v="${v}"><span>${i}</span><em>${l}</em></button>`).join("")}<button class="ni out" data-act="out"><span>🚪</span><em>Sair</em></button></nav><main id="main"></main></div><button class="fab" data-act="add" aria-label="Nova transação">+</button>`;
+  document.querySelectorAll(".ni[data-v]").forEach(b=>b.classList.toggle("on",b.dataset.v===S.view));
+  $("#main").innerHTML=V[S.view]();post()}
+
+/* ============ Transações ============ */
+function txForm(id){const t=S.data.tx.find(x=>x.id===id)||{type:"d",date:iso(new Date()),pay:PAY[0],rec:""};
+  openModal(`<h2>${id?"Editar":"Nova"} transação</h2><form id="tf"><div class="seg"><label><input type="radio" name="type" value="d" ${t.type==="d"?"checked":""}><span>Despesa</span></label><label><input type="radio" name="type" value="r" ${t.type==="r"?"checked":""}><span>Receita</span></label></div>
+  <label>Descrição<input name="desc" required maxlength="60" value="${esc(t.desc)}"></label>
+  <div class="two"><label>Valor (R$)<input name="amount" type="number" step="0.01" min="0.01" required inputmode="decimal" value="${t.amount??""}"></label><label>Data<input name="date" type="date" required value="${t.date}"></label></div>
+  <label>Categoria<select name="cat"></select></label>
+  <div class="two"><label>Pagamento<select name="pay">${PAY.map(p=>`<option ${p===t.pay?"selected":""}>${p}</option>`).join("")}</select></label><label>Recorrência<select name="rec">${Object.entries(REC).map(([k,v])=>`<option value="${k}" ${k===t.rec?"selected":""}>${v}</option>`).join("")}</select></label></div>
+  <label>Observações<textarea name="note" rows="2" maxlength="200">${esc(t.note)}</textarea></label>
+  <div class="acts"><button type="button" class="bt" data-act="close">Cancelar</button><button class="bt pr">Salvar</button></div></form>`);
+  const f=$("#tf"),fc=()=>{f.cat.innerHTML=ALL().filter(c=>c.t===f.type.value).map(c=>`<option ${c.n===t.cat?"selected":""}>${esc(c.n)}</option>`).join("")};
+  fc();f.querySelectorAll("[name=type]").forEach(r=>r.onchange=()=>{t.cat="";fc()});
+  f.onsubmit=e=>{e.preventDefault();const v=Object.fromEntries(new FormData(f)),amount=Math.round(parseFloat(v.amount)*100)/100;
+    if(!(amount>0)||!v.desc.trim())return toast("Informe uma descrição e um valor válidos","err");
+    const o={id:id||uid(),type:v.type,desc:v.desc.trim(),amount,date:v.date,cat:v.cat,pay:v.pay,note:v.note.trim(),rec:v.rec,next:v.rec?(t.rec===v.rec&&t.next?t.next:nxt(v.date,v.rec)):"",auto:t.auto};
+    id?Object.assign(S.data.tx.find(x=>x.id===id),o):S.data.tx.push(o);
+    save();closeModal();runRec();render();toast(id?"Transação atualizada ✏️":"Transação adicionada ✅");budgetWarn(o)}}
+function budgetWarn(o){const l=S.data.budgets[o.cat];if(o.type!=="d"||!l)return;
+  const s=S.data.tx.filter(t=>t.type==="d"&&t.cat===o.cat&&t.date.slice(0,7)===o.date.slice(0,7)).reduce((a,t)=>a+t.amount,0);
+  if(s>=l)toast(`⚠️ Orçamento de ${o.cat} estourado (${brl(s)} de ${brl(l)})`,"wr");else if(s>=l*.8)toast(`Atenção: ${Math.round(s/l*100)}% do orçamento de ${o.cat}`,"wr")}
+function confirmDel(id){const t=S.data.tx.find(x=>x.id===id);if(!t)return;
+  openModal(`<h2>Excluir transação?</h2><p class="mu">${esc(t.desc)} · ${brl(t.amount)}${t.rec?"<br>Os próximos lançamentos recorrentes também serão cancelados.":""}</p><div class="acts"><button class="bt" data-act="close">Cancelar</button><button class="bt dg" data-act="ok" data-id="${id}">Excluir</button></div>`)}
+function preset(p){const n=new Date(),y=n.getFullYear(),m=n.getMonth();
+  const r={mes:[new Date(y,m,1),new Date(y,m+1,0)],ant:[new Date(y,m-1,1),new Date(y,m,0)],30:[new Date(Date.now()-29*864e5),n],ano:[new Date(y,0,1),new Date(y,11,31)]}[p];
+  S.f.from=r?iso(r[0]):"";S.f.to=r?iso(r[1]):"";render()}
+
+/* ============ Eventos (delegação) ============ */
+document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b)return;const{act,id}=b.dataset;
+  ({nav:()=>{S.view=b.dataset.v;render();scrollTo({top:0,behavior:"smooth"})},add:()=>txForm(),edit:()=>txForm(id),del:()=>confirmDel(id),close:closeModal,out:logout,preset:()=>preset(b.dataset.p),am:()=>authView(b.dataset.m),delacc:()=>openModal(`<h2>Excluir conta?</h2><p class="mu">Isso apaga o usuário <b>${esc(S.user.name)}</b> e todas as transações, orçamentos e ajustes. Não dá pra desfazer.</p><form id="df"><label>Confirme sua senha<input name="pw" type="password" required autocomplete="current-password"></label><div class="acts"><button type="button" class="bt" data-act="close">Cancelar</button><button class="bt dg">Excluir de vez</button></div></form>`),rmbud:()=>{const n=b.dataset.c;delete S.data.budgets[n];S.data.hid=[...(S.data.hid||[]),n];save();render();toast("Orçamento removido da tela 🗑️")},rshow:()=>{S.data.hid=[];save();render();toast("Orçamentos restaurados ↺")},cfg:()=>setCfg(b.dataset.k,b.dataset.v),cfgreset:()=>{S.data.cfg={...CFG};save();applyCfg();render();toast("Ajustes restaurados ↺")},wpdel:()=>{S.wp="";LS.del("fx_wp_"+S.user.id);if(S.data.cfg.wall==="img")S.data.cfg.wall="aurora";save();applyCfg();render()},
+   ok:()=>{S.data.tx=S.data.tx.filter(t=>t.id!==id);save();closeModal();render();toast("Transação excluída 🗑️")}})[act]?.()});
+document.addEventListener("input",e=>{const t=e.target,k=t.dataset.cfg;if(k==="custom"){const c=S.data.cfg;c.custom=t.value;c.accent="custom";applyCfg()}
+  if(e.target.dataset.f==="q"){S.f.q=e.target.value;const a=filt();$("#lst").innerHTML=list();stag();$("#sum").textContent=a.length+" resultado(s)"}});
+document.addEventListener("change",e=>{const t=e.target;
+  if(t.dataset.f&&t.dataset.f!=="q"){S.f[t.dataset.f]=t.value;render()}
+  else if("lang" in t.dataset){setLang(t.value)}
+  else if("wpfile" in t.dataset){loadWp(t.files[0]);t.value=""}
+  else if(t.dataset.cfg){const k=t.dataset.cfg,c=S.data.cfg;c[k]=t.type==="checkbox"?t.checked:t.value;if(k==="custom")c.accent="custom";save();applyCfg();render()}
+  else if(t.dataset.bud){const v=parseFloat(t.value);v>0?S.data.budgets[t.dataset.bud]=v:delete S.data.budgets[t.dataset.bud];save();render();toast("Orçamento atualizado 🎯")}});
+document.addEventListener("submit",e=>{const f=e.target;
+  if(f.id==="af"){e.preventDefault();auth(f.dataset.m,f)}
+  else if(f.id==="df"){e.preventDefault();delAccount(f)}
+  else if(f.id==="cf"){e.preventDefault();const v=Object.fromEntries(new FormData(f)),n=v.n.trim();
+    if(ALL().some(c=>c.n.toLowerCase()===n.toLowerCase()))return toast("Essa categoria já existe","err");
+    S.data.cats.push({n,e:v.e.trim()||"🏷️",t:v.t});save();render();toast("Categoria criada ✨")}});
+new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(tl))).observe(document.body,{childList:true,subtree:true});
+document.documentElement.lang=LANG;document.title="Fluxo — "+tr("Controle de gastos");
+document.addEventListener("visibilitychange",()=>document.documentElement.classList.toggle("pz",document.hidden));
+boot();
+</script>
+</body>
+</html>
