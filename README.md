@@ -19,7 +19,7 @@
 
   <p>
     <a href="#-features">Features</a> ·
-    <a href="#-getting-started">Getting started</a> ·
+    <a href="#-live-demo">Live demo</a> ·
     <a href="#-tech-stack">Tech stack</a> ·
     <a href="#-data-and-privacy">Data & privacy</a>
   </p>
@@ -46,6 +46,16 @@ No frameworks, no complicated setup. Just open the app and take control of your 
 - **Language options** — Switch the app's display language.
 - **Local accounts** — Create an account and keep separate data in your browser.
 
+## 🌐 Live demo
+
+Try Fluxo directly in your browser — no download or installation required!
+
+<p align="center">
+  <a href="https://sigmadev21.github.io/fluxo/">
+    <img src="https://img.shields.io/badge/🚀%20Open%20Fluxo-Live%20Demo-8b5cf6?style=for-the-badge" alt="Open Fluxo live demo">
+  </a>
+</p>
+
 ## 🧰 Tech stack
 
 | Technology | Purpose |
@@ -54,21 +64,6 @@ No frameworks, no complicated setup. Just open the app and take control of your 
 | CSS3 | Styling, responsive layout, animations, and visual effects |
 | Vanilla JavaScript | App logic, interactions, and data handling |
 | Local Storage | Saving data in the browser |
-
-## 🏁 Getting started
-
-Fluxo does not require a build step or package installation.
-
-1. Clone this repository:
-
-   ```bash
-   git clone https://github.com/sigmadev21/fluxo.git
-   ```
-
-2. Open the project folder.
-3. Open `index.html` in your browser.
-
-That's it! You're ready to go.
 
 ## 🔐 Data and privacy
 
