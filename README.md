@@ -19,7 +19,7 @@
 
   <p>
     <a href="#-features">Features</a> ·
-    <a href="#-live-demo">Live demo</a> ·
+    <a href="#-open-fluxo">Open Fluxo</a> ·
     <a href="#-tech-stack">Tech stack</a> ·
     <a href="#-data-and-privacy">Data & privacy</a>
   </p>
@@ -46,13 +46,13 @@ No frameworks, no complicated setup. Just open the app and take control of your 
 - **Language options** — Switch the app's display language.
 - **Local accounts** — Create an account and keep separate data in your browser.
 
-## 🌐 Live demo
+## 🌐 Open Fluxo
 
-Try Fluxo directly in your browser — no download or installation required!
+Fluxo is available as a web app. Open it directly in your browser:
 
 <p align="center">
   <a href="https://sigmadev21.github.io/fluxo/">
-    <img src="https://img.shields.io/badge/🚀%20Open%20Fluxo-Live%20Demo-8b5cf6?style=for-the-badge" alt="Open Fluxo live demo">
+    <img src="https://img.shields.io/badge/🚀%20Open%20Fluxo-8b5cf6?style=for-the-badge" alt="Open Fluxo">
   </a>
 </p>
 
