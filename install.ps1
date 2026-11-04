@@ -45,7 +45,7 @@ if ($Https) {
   $DockerArgs += @("-p","${Port}:80")
   $Url = "http://localhost:$Port"
 }
-docker @args $Image
+docker @DockerArgs $Image
 if ($LASTEXITCODE -ne 0) { throw "Could not start the Fluxo container." }
 Write-Host "Fluxo is running at $Url" -ForegroundColor Green
 Write-Host "Update: .\update.ps1 | Uninstall: .\uninstall.ps1"
