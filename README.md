@@ -97,7 +97,7 @@ The default HTTP port is `8080`. If it is already in use, choose another one:
 
 ```bash
 # Linux / macOS
-./install.sh --port 3000
+bash ./install.sh --port 3000
 ```
 
 ```powershell
@@ -111,7 +111,7 @@ To use Fluxo from a phone or another computer on your local network, install it 
 
 ```bash
 # Linux / macOS
-./install.sh --https
+bash ./install.sh --https
 ```
 
 ```powershell
@@ -155,7 +155,7 @@ The update scripts download the latest project files, rebuild the Docker image, 
 From the Fluxo installation directory:
 
 ```bash
-./update.sh
+bash ./update.sh
 ```
 
 Or run the updater directly:
@@ -179,13 +179,13 @@ Uninstallation removes the Fluxo container and Docker image. It does **not** uni
 **Linux / macOS**
 
 ```bash
-./uninstall.sh
+bash ./uninstall.sh
 ```
 
 To also delete the downloaded Fluxo folder (including any generated HTTPS certificates):
 
 ```bash
-./uninstall.sh --purge
+bash ./uninstall.sh --purge
 ```
 
 **Windows (PowerShell)**
