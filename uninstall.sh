@@ -3,12 +3,12 @@
 set -Eeuo pipefail
 PURGE=0
 DIR="${FLUXO_DIR:-$HOME/fluxo}"
-for arg in "$@"; do
-  case "$arg" in
-    --purge) PURGE=1 ;;
-    --dir) shift; DIR="${1:?Missing directory}" ;;
-    --yes|-y) ;;
-    *) echo "Unknown option: $arg" >&2; exit 1 ;;
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --purge) PURGE=1; shift ;;
+    --dir) DIR="${2:?Missing directory}"; shift 2 ;;
+    --yes|-y) shift ;;
+    *) echo "Unknown option: $1" >&2; exit 1 ;;
   esac
 done
 docker rm -f fluxo >/dev/null 2>&1 || true
