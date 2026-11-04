@@ -6,11 +6,13 @@ IMAGE=fluxo:latest
 PORT=8080
 HTTPS_PORT=8443
 HTTPS=0
+UPDATE=0
 DIR="${FLUXO_DIR:-$HOME/fluxo}"
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --https) HTTPS=1; shift ;;
-    --update|--yes) shift ;;
+    --update) UPDATE=1; shift ;;
+    --yes) shift ;;
     --port) PORT="${2:?Missing port}"; shift 2 ;;
     --https-port) HTTPS_PORT="${2:?Missing HTTPS port}"; shift 2 ;;
     --dir) DIR="${2:?Missing directory}"; shift 2 ;;
@@ -29,7 +31,7 @@ if ! command -v docker >/dev/null 2>&1; then
   fi
 fi
 docker info >/dev/null 2>&1 || { echo "Start Docker and try again." >&2; exit 1; }
-if [ -f ./index.html ] && [ -f ./Dockerfile ]; then DIR="$PWD"; else
+if [ "$UPDATE" -eq 0 ] && [ -f ./index.html ] && [ -f ./Dockerfile ]; then DIR="$PWD"; else
   mkdir -p "$DIR"
   tmp="$(mktemp -d)"
   trap 'rm -rf "$tmp"' EXIT
