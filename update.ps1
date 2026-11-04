@@ -7,9 +7,9 @@ Invoke-WebRequest -Uri $Url -OutFile $Installer
 try {
   $Http = (docker port fluxo 80/tcp 2>$null | Select-Object -First 1) -replace '.*:', ''
   $Https = (docker port fluxo 443/tcp 2>$null | Select-Object -First 1) -replace '.*:', ''
-  $Args = @("-Dir",$Dir,"-Update")
-  if ($Https) { $Args += @("-Https","-HttpsPort",$Https) }
-  elseif ($Http) { $Args += @("-Port",$Http) }
+  $DockerArgs = @("-Dir",$Dir,"-Update")
+  if ($Https) { $DockerArgs += @("-Https","-HttpsPort",$Https) }
+  elseif ($Http) { $DockerArgs += @("-Port",$Http) }
   & $Installer @Args
   if ($LASTEXITCODE -ne 0) { throw "Fluxo update failed." }
 } finally { Remove-Item $Installer -Force -ErrorAction SilentlyContinue }
