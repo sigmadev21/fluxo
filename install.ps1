@@ -15,7 +15,7 @@ if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
 }
 docker info *> $null
 if ($LASTEXITCODE -ne 0) { Write-Error "Start Docker Desktop and try again." }
-if ((Test-Path ".\index.html") -and (Test-Path ".\Dockerfile")) {
+if ((Test-Path ".\\index.html") -and (Test-Path ".\\Dockerfile") -and (-not $Update)) {
   $Source = (Get-Location).Path
 } else {
   $Temp = Join-Path ([IO.Path]::GetTempPath()) ("fluxo-" + [guid]::NewGuid())
