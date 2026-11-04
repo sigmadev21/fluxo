@@ -10,6 +10,6 @@ try {
   $DockerArgs = @("-Dir",$Dir,"-Update")
   if ($Https) { $DockerArgs += @("-Https","-HttpsPort",$Https) }
   elseif ($Http) { $DockerArgs += @("-Port",$Http) }
-  & $Installer @Args
+  & $Installer @DockerArgs
   if ($LASTEXITCODE -ne 0) { throw "Fluxo update failed." }
 } finally { Remove-Item $Installer -Force -ErrorAction SilentlyContinue }
