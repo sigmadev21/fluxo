@@ -32,17 +32,17 @@ if ((Test-Path ".\index.html") -and (Test-Path ".\Dockerfile")) {
 docker build -t $Image $Source
 if ($LASTEXITCODE -ne 0) { throw "Docker image build failed." }
 docker rm -f $App *> $null
-$args = @("run","-d","--name",$App,"--restart","unless-stopped","--security-opt","no-new-privileges")
+$DockerArgs = @("run","-d","--name",$App,"--restart","unless-stopped","--security-opt","no-new-privileges")
 if ($Https) {
   $Certs = Join-Path $Source "certs"
   New-Item -ItemType Directory -Path $Certs -Force | Out-Null
   if (-not (Test-Path (Join-Path $Certs "fluxo.crt"))) {
     docker run --rm -v "${Certs}:/certs" alpine/openssl req -x509 -nodes -newkey rsa:2048 -days 825 -keyout /certs/fluxo.key -out /certs/fluxo.crt -subj "/CN=fluxo.local" -addext "subjectAltName=DNS:localhost,IP:127.0.0.1"
   }
-  $args += @("-p","${HttpsPort}:443","-v","$(Join-Path $Source 'nginx-ssl.conf'):/etc/nginx/conf.d/default.conf:ro","-v","${Certs}:/etc/nginx/certs:ro")
+  $DockerArgs += @("-p","${HttpsPort}:443","-v","$(Join-Path $Source 'nginx-ssl.conf'):/etc/nginx/conf.d/default.conf:ro","-v","${Certs}:/etc/nginx/certs:ro")
   $Url = "https://localhost:$HttpsPort"
 } else {
-  $args += @("-p","${Port}:80")
+  $DockerArgs += @("-p","${Port}:80")
   $Url = "http://localhost:$Port"
 }
 docker @args $Image
