@@ -1,7 +1,0 @@
-.git
-.github
-certs
-*.md
-*.sh
-*.ps1
-docker-compose.yml
