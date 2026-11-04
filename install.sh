@@ -7,15 +7,15 @@ PORT=8080
 HTTPS_PORT=8443
 HTTPS=0
 DIR="${FLUXO_DIR:-$HOME/fluxo}"
-for arg in "$@"; do
-  case "$arg" in
-    --https) HTTPS=1 ;;
-    --update|--yes) ;;
-    --port) shift; PORT="${1:?Missing port}" ;;
-    --https-port) shift; HTTPS_PORT="${1:?Missing HTTPS port}" ;;
-    --dir) shift; DIR="${1:?Missing directory}" ;;
-    --help|-h) echo "Usage: ./install.sh [--port PORT] [--https] [--https-port PORT] [--dir PATH]"; exit 0 ;;
-    *) echo "Unknown option: $arg" >&2; exit 1 ;;
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --https) HTTPS=1; shift ;;
+    --update|--yes) shift ;;
+    --port) PORT="${2:?Missing port}"; shift 2 ;;
+    --https-port) HTTPS_PORT="${2:?Missing HTTPS port}"; shift 2 ;;
+    --dir) DIR="${2:?Missing directory}"; shift 2 ;;
+    --help|-h) echo "Usage: bash ./install.sh [--port PORT] [--https] [--https-port PORT] [--dir PATH]"; exit 0 ;;
+    *) echo "Unknown option: $1" >&2; exit 1 ;;
   esac
 done
 if ! command -v docker >/dev/null 2>&1; then
